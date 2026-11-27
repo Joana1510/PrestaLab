@@ -1,0 +1,48 @@
+name: Historia / Funcionalidad
+description: Nueva funcionalidad o mejora de PrestaLab
+title: "[Historia] "
+labels: ["feature"]
+body:
+  - type: textarea
+    id: historia
+    attributes:
+      label: Historia de usuario
+      description: "Como <rol>, quiero <acción>, para <beneficio>."
+      placeholder: "Como laboratorista, quiero registrar un préstamo en menos de 1 minuto, para no hacer fila."
+    validations:
+      required: true
+  - type: dropdown
+    id: roles
+    attributes:
+      label: Roles afectados
+      multiple: true
+      options:
+        - Administrador
+        - Laboratorista
+        - Consulta
+    validations:
+      required: true
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Criterios de aceptación
+      description: Lista verificable. Cada punto debe poder probarse.
+      value: |
+        - [ ]
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+  - type: textarea
+    id: notas
+    attributes:
+      label: Notas técnicas
+      description: Capas involucradas, tablas, endpoints, riesgos (opcional).
+  - type: checkboxes
+    id: listo
+    attributes:
+      label: Definición de "Listo" (antes de mover a la columna Listo)
+      options:
+        - label: Los criterios de aceptación son claros y verificables
+        - label: Se puede terminar en 2 días o menos (si no, dividirla)
+        - label: Tiene etiqueta de tipo y de prioridad

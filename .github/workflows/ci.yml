@@ -1,0 +1,119 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  calidad:
+    name: Calidad
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_DB: prestalab_test
+          POSTGRES_USER: prestalab
+          POSTGRES_PASSWORD: secret
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U prestalab -d prestalab_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      APP_ENV: testing
+      DB_CONNECTION: pgsql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5432
+      DB_DATABASE: prestalab_test
+      DB_USERNAME: prestalab
+      DB_PASSWORD: secret
+
+    steps:
+      - name: Obtener el código
+        uses: actions/checkout@v5
+
+      - name: Verificar estructura básica del repositorio
+        run: test -f README.md
+
+      - name: Detectar proyecto Laravel
+        id: detectar
+        run: |
+          if [ -f composer.json ] && [ -f artisan ]; then
+            echo "laravel=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "laravel=false" >> "$GITHUB_OUTPUT"
+            echo "Aún no hay proyecto Laravel (Fase 0): se valida solo la estructura."
+          fi
+
+      - name: Configurar PHP
+        if: steps.detectar.outputs.laravel == 'true'
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: mbstring, intl, gd, pdo_pgsql, pgsql, zip, sodium, curl, xml, fileinfo
+          coverage: none
+          tools: composer:v2
+
+      - name: Validar composer.json
+        if: steps.detectar.outputs.laravel == 'true'
+        run: composer validate
+
+      - name: Instalar dependencias de PHP
+        if: steps.detectar.outputs.laravel == 'true'
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Configurar Node
+        if: steps.detectar.outputs.laravel == 'true' && hashFiles('package-lock.json') != ''
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Instalar y compilar assets
+        if: steps.detectar.outputs.laravel == 'true' && hashFiles('package-lock.json') != ''
+        run: |
+          npm ci
+          npm run build
+
+      - name: Preparar entorno de la aplicación
+        if: steps.detectar.outputs.laravel == 'true'
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Migrar base de datos
+        if: steps.detectar.outputs.laravel == 'true'
+        run: php artisan migrate --force
+
+      - name: Estilo de código (Pint)
+        if: steps.detectar.outputs.laravel == 'true'
+        run: |
+          if [ -x vendor/bin/pint ]; then vendor/bin/pint --test; else echo "Pint aún no instalado"; fi
+
+      - name: Análisis estático (PHPStan/Larastan)
+        if: steps.detectar.outputs.laravel == 'true'
+        run: |
+          if [ -x vendor/bin/phpstan ]; then vendor/bin/phpstan analyse --memory-limit=1G --no-progress; else echo "PHPStan aún no instalado"; fi
+
+      - name: Pruebas
+        if: steps.detectar.outputs.laravel == 'true'
+        run: php artisan test
+
+      - name: Auditoría de dependencias
+        if: steps.detectar.outputs.laravel == 'true'
+        run: composer audit

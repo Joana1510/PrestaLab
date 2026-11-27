@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Reportar una vulnerabilidad (privado)
+    url: https://github.com/Joana1510/PrestaLab/security/advisories/new
+    about: No publiques vulnerabilidades en una issue pública; repórtalas aquí.

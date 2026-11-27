@@ -1,0 +1,20 @@
+name: Tarea técnica / documentación
+description: Mantenimiento, configuración, refactor o documentación
+title: "[Tarea] "
+labels: ["chore"]
+body:
+  - type: textarea
+    id: objetivo
+    attributes:
+      label: Objetivo
+    validations:
+      required: true
+  - type: textarea
+    id: criterios
+    attributes:
+      label: Criterios de aceptación
+      value: |
+        - [ ]
+        - [ ]
+    validations:
+      required: true
