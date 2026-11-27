@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         # CodeQL no soporta PHP. En la Fase 1 se agrega: javascript-typescript
-        language: [actions]
+        language: [actions, javascript-typescript]
     steps:
       - name: Obtener el código
         uses: actions/checkout@v5

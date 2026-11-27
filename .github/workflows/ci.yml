@@ -114,6 +114,5 @@ jobs:
         if: steps.detectar.outputs.laravel == 'true'
         run: php artisan test
 
-      - name: Auditoría de dependencias
-        if: steps.detectar.outputs.laravel == 'true'
-        run: composer audit
+            - name: Auditoría de dependencias
+        run: composer audit --abandoned=report

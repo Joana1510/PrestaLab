@@ -1,0 +1,67 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+    display: none !important;
+}
+
+@layer base {
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
+}
+
+@layer components {
+    /* Botones: altura mínima táctil de 44 px. Rojo solo para acciones destructivas. */
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        @apply inline-flex min-h-[2.75rem] items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .btn-primary {
+        @apply bg-brand-700 text-white hover:bg-brand-800 focus-visible:ring-brand-600;
+    }
+
+    .btn-secondary {
+        @apply bg-white text-navy-800 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus-visible:ring-navy-600;
+    }
+
+    .btn-danger {
+        @apply bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-600;
+    }
+
+    .card {
+        @apply rounded-xl bg-white p-5 shadow-sm ring-1 ring-slate-200 sm:p-6;
+    }
+
+    /* Insignias de estado */
+    .badge-disponible,
+    .badge-prestado,
+    .badge-mantenimiento,
+    .badge-vencido,
+    .badge-baja {
+        @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold;
+    }
+
+    .badge-disponible {
+        @apply bg-brand-100 text-brand-800;
+    }
+
+    .badge-prestado {
+        @apply bg-blue-100 text-blue-800;
+    }
+
+    .badge-mantenimiento {
+        @apply bg-amber-100 text-amber-800;
+    }
+
+    .badge-vencido {
+        @apply bg-red-100 text-red-800;
+    }
+
+    .badge-baja {
+        @apply bg-slate-200 text-slate-700;
+    }
+}
