@@ -1,26 +1,71 @@
-# Linkedin para Estudiantes
+# PrestaLab
 
-Este proyecto es una base inicial de landing page para una página que promociona la importancia de usar LinkedIn como estudiante.
+Sistema web para controlar préstamos y devoluciones del equipo de los laboratorios
+de la DTIC de la UTTEC, con evidencia fotográfica, ubicación y trazabilidad.
 
-## Estructura
+## Stack
+Laravel 13 · PHP 8.3+ · PostgreSQL 18 · Blade + Tailwind CSS 3 + Alpine.js (Laravel Breeze)
 
-- `index.html`: estructura principal del sitio
-- `styles.css`: estilos visuales del diseño
+## Requisitos
+PHP 8.3+ (extensiones: pdo_pgsql, pgsql, mbstring, intl, gd, fileinfo, zip, openssl, curl, xml, sodium),
+Composer 2, Node 24+ y PostgreSQL 18.
 
-## Cómo abrirlo
+## Instalación local
+```powershell
+git clone https://github.com/Joana1510/PrestaLab.git
+cd PrestaLab
+composer install
+Copy-Item .env.example .env
+php artisan key:generate
+# Edita .env: DB_PASSWORD
+```
+Base de datos (pgAdmin4, Query Tool, cada sentencia por separado):
+```sql
+CREATE ROLE prestalab_app WITH LOGIN PASSWORD 'TU_CLAVE' NOSUPERUSER NOCREATEDB NOCREATEROLE;
+CREATE DATABASE prestalab OWNER prestalab_app;
+CREATE DATABASE prestalab_test OWNER prestalab_app;
+```
+```powershell
+php artisan migrate
+npm install
+npm run build
+```
 
-1. Descarga o clona este repositorio.
-2. Abre `index.html` en tu navegador.
-3. Personaliza el contenido y colores según tus necesidades.
+## Ejecutar (HTTPS local)
+Consulta [docs/https-local.md](docs/https-local.md).
+```powershell
+php artisan serve
+npm run dev
+./scripts/local/https.ps1
+```
+URL: https://localhost:8443
 
-## Personalización recomendada
+## Calidad
+```powershell
+vendor\bin\pint --test        # estilo
+composer analyse              # PHPStan/Larastan
+php artisan test              # pruebas (usan la base prestalab_test)
+composer audit                # dependencias
+```
 
-- Cambiar el texto principal para reflejar tu marca o proyecto.
-- Ajustar los colores y tipografía en `styles.css`.
-- Agregar imágenes, secciones o formularios más adelante.
+## Variables de entorno principales
+| Variable | Descripción |
+|---|---|
+| `APP_URL` | URL pública (local: `https://localhost:8443`) |
+| `APP_LOCALE` / `APP_TIMEZONE` | `es_MX` / `America/Mexico_City` |
+| `DB_*` | Conexión a PostgreSQL (`DB_TIMEZONE` fija la zona de la sesión) |
+| `SESSION_LIFETIME` | Minutos de inactividad antes de cerrar sesión (30) |
+| `SESSION_SECURE_COOKIE` | `true` en producción |
 
-## Tecnologías usadas
+Los secretos van solo en `.env` (nunca en el repositorio) o en GitHub Secrets.
 
-- HTML5
-- CSS3
+## Flujo de trabajo
+Scrumban en GitHub Projects. Ver [CONTRIBUTING.md](CONTRIBUTING.md) y [docs/scrumban.md](docs/scrumban.md).
 
+## Documentación
+- [Arquitectura por capas](docs/arquitectura.md)
+- [HTTPS local](docs/https-local.md)
+- [Decisiones (ADR)](docs/adr/)
+
+## Seguridad
+Ver [SECURITY.md](SECURITY.md).
